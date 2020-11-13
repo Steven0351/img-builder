@@ -11,17 +11,29 @@ jobs:
       uses: actions/checkout@v2
     - name: Checkout img
       run: sh clone-img.sh
+    - name: Set img version
+      id: img-version
+      run: echo '::set-output img_version=$(cat IMG_VERSION.txt)'
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
       with:
-        platforms: arm64,amd64,arm
+        platforms: linux/arm64,linux/amd64,linux/arm
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
       id: buildx
       with:
         install: true
         version: latest
-    - name: Build
-      run: |
-        cd img
-        docker build --platform ${{ steps.buildx.outputs.platforms }} .
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+    - name: Build Image
+      uses: docker/build-push-action@v2
+      with:
+        push: false
+        context: img
+        file: img/Dockerfile
+        platforms: ${{ steps.buildx.outputs.platforms }}
+        tags: steven0351/img:${{ steps.img-version.outputs.img_version }}
