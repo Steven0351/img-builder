@@ -13,7 +13,7 @@ jobs:
       run: sh clone-img.sh
     - name: Set img version
       id: img-version
-      run: echo "::set-output img_version=$(cat IMG_VERSION.txt)"
+      run: echo "::set-output name=img_version::$(cat IMG_VERSION.txt)"
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
       with:
@@ -36,4 +36,6 @@ jobs:
         context: img
         file: img/Dockerfile
         platforms: ${{ steps.buildx.outputs.platforms }}
-        tags: steven0351/img:${{ steps.img-version.outputs.img_version }}
+        tags: |
+          steven0351/img:latest
+          steven0351/img:${{ steps.img-version.outputs.img_version }}
