@@ -2,6 +2,11 @@ name: img
 
 on:
   push:
+    branches:
+    - main
+    paths:
+    - "img.yaml"
+    - "IMG_VERSION.txt"
 
 jobs:
   build-img:
@@ -32,7 +37,7 @@ jobs:
     - name: Build Image
       uses: docker/build-push-action@v2
       with:
-        push: false
+        push: true
         context: img
         file: img/Dockerfile
         platforms: ${{ steps.buildx.outputs.platforms }}
